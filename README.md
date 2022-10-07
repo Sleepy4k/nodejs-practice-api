@@ -9,4 +9,4 @@ npm i
 ```
 
 ## Route
-> https://github.com/Sleepy4k/nodejs-practice-api/postman/tugas.json
+> https://github.com/Sleepy4k/nodejs-practice-api/blob/main/postman/tugas.json
