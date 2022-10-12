@@ -1,12 +1,14 @@
 const http = require('http');
 const PORT = 5000;
 
+// Data Dummy
 const dataTugas = [
     {urutan: 1, tugas: 'Tugas Satu'},
     {urutan: 2, tugas: 'Tugas Dua'},
     {urutan: 3, tugas: 'Tugas Tiga'},
 ];
 
+// Main Function Create Server
 const server = http.createServer((permintaan, respon) => {
     const {method, url} = permintaan;
     
@@ -50,4 +52,5 @@ const server = http.createServer((permintaan, respon) => {
     });
 });
 
+// Listen Web
 server.listen(PORT, () => console.log(`Server berjalan pada port ${PORT}`));
