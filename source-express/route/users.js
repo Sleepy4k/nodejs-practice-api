@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // Controller
-const userController = require('../controller/users')
+const userController = require(`../${process.env.PATH_CONTROLLER}/users`)
 
 // Main Route
 router.get('/users', userController.index)
