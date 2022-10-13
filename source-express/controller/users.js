@@ -1,8 +1,10 @@
-// Data Dummy
-let userData = [
-    {urutan: 1, nama: "Benjamin4k", email: "sarahpalastrin@gmail.com"},
-    {urutan: 2, nama: "Apri Pandu", email: "3103120028@student.smktelkom-pwt.sch.id"},
-];
+const fs = require('fs')
+
+// Get Config
+require('dotenv/config')
+
+// Database Location
+const userData = `./${process.env.DB_PATH}/users.json`
 
 // Response Json Trait
 function responseData(permintaan, params) {
@@ -17,12 +19,24 @@ function responseData(permintaan, params) {
     return body;
 }
 
+function getUserData() {
+    const jsonData = fs.readFileSync(userData)
+
+    return JSON.parse(jsonData)
+}
+
+function saveUserData(body) {
+    fs.writeFileSync(userData, JSON.stringify(body))
+
+    return true
+}
+
 // Main Module CRUD
 module.exports = {
     index: (permintaan, respon) => {
-        if (userData.length > 0) {
+        if (getUserData().length > 0) {
             respon.json(responseData(permintaan, {
-                data: userData
+                data: getUserData()
             }))
         } else {
             respon.json(responseData(permintaan, {
@@ -32,44 +46,64 @@ module.exports = {
         }
     },
     store: (permintaan, respon) => {
-        userData.push(permintaan.body)
+        const object = getUserData()
+    
+        object.push(permintaan.body)
+    
+        saveUserData(object)
     
         respon.json(responseData(permintaan, {
             message: "Data berhasil ditambahkan",
-            data: userData
+            data: getUserData()
         }))
     },
     show: (permintaan, respon) => {
-        const urutan = permintaan.params.id;
-        const data = userData.find(user => user.urutan == urutan);
+        const data = getUserData().find(user => user.urutan == permintaan.params.id);
 
-        respon.json(responseData(permintaan, {
-            message: "Data berhasil ditambahkan",
-            data: data
-        }))
+        if (data) {
+            respon.json(responseData(permintaan, {
+                data: data
+            }))
+        } else {
+            respon.json(responseData(permintaan, {
+                message: "Data tidak ditemukan"
+            }))
+        }
     },
     update: (permintaan, respon) => {
-        const urutan = permintaan.params.id;
-        const data = permintaan.body;
+        const urutan = permintaan.params.id
+        const users = getUserData()
 
-        userData.filter(user => {
-            if (user.urutan == urutan) {
-                user.nama = data.nama
-                user.email = data.email
+        if (!users.find(user => user.urutan == urutan)) {
+            return respon.json(responseData(permintaan, {
+                message: "Data tidak ditemukan"
+            }))
+        }
 
-                return user
-            }
-        })
+        const updatedUser = users.filter(user => user.urutan !== urutan)
+
+        updatedUser.push(permintaan.body)
+
+        saveUserData(updatedUser)
 
         respon.json(responseData(permintaan, {
             message: "Data berhasil diubah",
-            data: userData
+            data: getUserData()
         }))
     },
     delete: (permintaan, respon) => {
         const urutan = permintaan.params.id
+        const users = getUserData()
 
-        users = userData.filter(user => user.urutan != urutan)
+        if (!users.find(user => user.urutan == urutan)) {
+            return respon.json(responseData(permintaan, {
+                message: "Data tidak ditemukan"
+            }))
+        }
+
+        const data = users.filter( user => user.urutan !== urutan )
+        
+        saveUserData(data)
 
         respon.json(responseData(permintaan, {
             message: "Data berhasil dihapus",
