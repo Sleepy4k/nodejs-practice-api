@@ -1,8 +1,5 @@
 const fs = require('fs')
 
-// Get Config
-require('dotenv/config')
-
 // Database Location
 const userData = `./${process.env.DB_PATH}/users.json`
 
@@ -11,24 +8,28 @@ function responseData(permintaan, params) {
     var body = {
         status: params.status ? params.status : true,
         message: params.message,
-        data: params.data,
-        method: permintaan.method,
-        url: permintaan.url
+        meta: {
+            hostname: permintaan.hostname,
+            method: permintaan.method,
+            url: permintaan.url
+        },
+        data: params.data
     }
 
     return body;
 }
 
+// Read Database User File
 function getUserData() {
     const jsonData = fs.readFileSync(userData)
 
     return JSON.parse(jsonData)
 }
 
+// Write Database User File
 function saveUserData(body) {
-    fs.writeFileSync(userData, JSON.stringify(body))
-
-    return true
+    const stringifyData = JSON.stringify(body)
+    fs.writeFileSync(userData, stringifyData)
 }
 
 // Main Module CRUD
@@ -46,9 +47,17 @@ module.exports = {
         }
     },
     store: (permintaan, respon) => {
+        const form = permintaan.body
         const object = getUserData()
     
-        object.push(permintaan.body)
+        if (object.find(user => user.urutan == form.urutan)) {
+            return respon.json(responseData(permintaan, {
+                status: false,
+                message: "Data id terduplikat"
+            }))
+        }
+
+        object.push(form)
     
         saveUserData(object)
     
@@ -66,6 +75,7 @@ module.exports = {
             }))
         } else {
             respon.json(responseData(permintaan, {
+                status: false,
                 message: "Data tidak ditemukan"
             }))
         }
@@ -76,6 +86,7 @@ module.exports = {
 
         if (!users.find(user => user.urutan == urutan)) {
             return respon.json(responseData(permintaan, {
+                status: false,
                 message: "Data tidak ditemukan"
             }))
         }
@@ -97,6 +108,7 @@ module.exports = {
 
         if (!users.find(user => user.urutan == urutan)) {
             return respon.json(responseData(permintaan, {
+                status: false,
                 message: "Data tidak ditemukan"
             }))
         }
