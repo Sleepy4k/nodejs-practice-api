@@ -4,6 +4,8 @@ const app = express()
 
 // Get Config File
 require('dotenv/config')
+
+// Const for listen web
 const name = process.env.APP_NAME
 const port = process.env.APP_PORT
 
