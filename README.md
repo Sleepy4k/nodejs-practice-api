@@ -27,6 +27,14 @@ $ cd module-(your target)
 # Install dependencies
 $ npm install
 
+# Do this if you use express source
+
+## Windows
+$ copy .env.example .env
+
+## Linux
+$ cp .env.example .env
+
 # Run the app
 $ npm run dev or npx nodemon server
 ```
