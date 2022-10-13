@@ -39,27 +39,37 @@ module.exports = {
             data: userData
         }))
     },
+    show: (permintaan, respon) => {
+        const urutan = permintaan.params.id;
+        const data = userData.find(user => user.urutan == urutan);
+
+        respon.json(responseData(permintaan, {
+            message: "Data berhasil ditambahkan",
+            data: data
+        }))
+    },
     update: (permintaan, respon) => {
-        const id = permintaan.params.id
+        const urutan = permintaan.params.id;
+        const data = permintaan.body;
 
         userData.filter(user => {
-            if (user.id == id) {
-                user.nama = permintaan.body.nama
-                user.email = permintaan.body.email
+            if (user.urutan == urutan) {
+                user.nama = data.nama
+                user.email = data.email
 
                 return user
             }
         })
-        
+
         respon.json(responseData(permintaan, {
             message: "Data berhasil diubah",
             data: userData
         }))
     },
     delete: (permintaan, respon) => {
-        const id = permintaan.params.id
+        const urutan = permintaan.params.id
 
-        users = userData.filter(user => user.id != id)
+        users = userData.filter(user => user.urutan != urutan)
 
         respon.json(responseData(permintaan, {
             message: "Data berhasil dihapus",
