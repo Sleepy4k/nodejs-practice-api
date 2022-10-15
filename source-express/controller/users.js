@@ -72,21 +72,28 @@ module.exports = {
     store: (permintaan, respon) => {
         var users = getUserData()
         var form = permintaan.body
+
+        if (!form.urutan || !form.nama || !form.email) {
+            respon.json(responseData(permintaan, {
+                message: "Silahkan masukan urutan, nama dan email yang benar"
+            }))
+        }
+
         var duplicate = users.find((user) => user.urutan == form.urutan)
     
-        if (!duplicate) {
+        if (duplicate) {
+            respon.json(responseData(permintaan, {
+                status: false,
+                message: "Data id terduplikat"
+            })) 
+        } else {
             users.push(form)
-    
+        
             saveUserData(users)
         
             respon.json(responseData(permintaan, {
                 message: "Data berhasil ditambahkan",
                 data: getUserData()
-            }))
-        } else {
-            respon.json(responseData(permintaan, {
-                status: false,
-                message: "Data id terduplikat"
             }))
         }
     },
@@ -129,17 +136,33 @@ module.exports = {
     update: (permintaan, respon) => {
         var users = getUserData()
         var forms = permintaan.body
-        var urutan = permintaan.params.id - 1
+        var urutan = permintaan.params.id
+        var isExist = users.find((user) => user.urutan == urutan)
 
-        users[urutan].nama = forms.nama
-        users[urutan].email = forms.email
+        if (!isExist) {
+            return respon.json(responseData(permintaan, {
+                status: false,
+                message: "Data tidak ditemukan"
+            }))
+        }
 
-        saveUserData(users)
+        if (forms.nama && forms.email) {
+            urutan = urutan - 1
 
-        respon.json(responseData(permintaan, {
-            message: "Data berhasil diubah",
-            data: users
-        }))
+            users[urutan].nama = forms.nama
+            users[urutan].email = forms.email
+    
+            saveUserData(users)
+    
+            respon.json(responseData(permintaan, {
+                message: "Data berhasil diubah",
+                data: users
+            }))
+        } else {
+            respon.json(responseData(permintaan, {
+                message: "Silahkan masukan nama dan email yang benar"
+            }))
+        }
     },
     
     /**
