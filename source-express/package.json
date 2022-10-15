@@ -6,10 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["express js", "rest api", "javascript"],
+  "keywords": [
+    "express js",
+    "rest api",
+    "javascript"
+  ],
   "author": "Benjamin4k",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^2.4.1",
     "dotenv": "^16.0.3",
     "express": "~4.16.1"
   }
