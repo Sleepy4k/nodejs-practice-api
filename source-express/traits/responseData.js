@@ -1,5 +1,13 @@
 module.exports = {
-    // Create success response body
+    /**
+     * Create success respon body
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * @param Params params
+     * 
+     * @return Array
+     */
     success: function(permintaan, respon, params) {
         respon.json({
             status: true,
@@ -13,7 +21,15 @@ module.exports = {
         })
     },
     
-    // Create error response body
+    /**
+     * Create error respon body
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * @param Params params
+     * 
+     * @return Array
+     */
     error: function(permintaan, respon, params) {
         respon.json({
             status: false,
