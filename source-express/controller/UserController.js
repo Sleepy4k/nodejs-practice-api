@@ -103,8 +103,7 @@ module.exports = {
      */
     show: (permintaan, respon) => {
         var urutan = permintaan.params.id
-        var users = userRepository.getUserData()
-        var isExist = users.find((user) => user.urutan == urutan)
+        var isExist = userRepository.findUserData(urutan)
 
         if (isExist) {
             if (env == 'local') {
@@ -138,7 +137,7 @@ module.exports = {
         var forms = permintaan.body
         var urutan = permintaan.params.id
         var users = userRepository.getUserData()
-        var isExist = users.find((user) => user.urutan == urutan)
+        var isExist = userRepository.findUserData(urutan)
 
         if (!isExist) {
             if (env == 'local') {
