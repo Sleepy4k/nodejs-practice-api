@@ -1,18 +1,18 @@
-const express = require('express')
-const router = express.Router()
+var express = require('express')
+var router = express.Router()
 
-// Const for config
-var controllerPath = process.env.PATH_CONTROLLER || 'controller'
+// Get Config File
+var { system } = require('../config/path')
 
 // Controller
-const userController = require(`../${controllerPath}/users`)
+var userController = require(`../${system.controller}/UserController`)
 
 // Main Route
 router.get('/users', userController.index)
 router.post('/user', userController.store)
 router.get('/user/:id', userController.show)
 router.put('/user/:id', userController.update)
-router.delete('/user/:id', userController.delete)
+router.delete('/user/:id', userController.destroy)
 
 // Module Export
 module.exports = router
