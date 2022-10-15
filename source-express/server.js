@@ -1,22 +1,22 @@
-const bodyParser = require("body-parser")
-const express = require('express')
-const app = express()
+var express = require('express')
+var app = express()
 
 // Get Config File
 require('dotenv/config')
 
-// Const for listen web
-const name = process.env.APP_NAME
-const port = process.env.APP_PORT
+// data for config
+var name = process.env.APP_NAME || 'Express'
+var port = process.env.APP_PORT || '3000'
+var routePath = process.env.PATH_ROUTER || 'routes'
 
 // List Route
-const users = require(`./${process.env.PATH_ROUTER}/users`)
+var users = require(`./${routePath}/users`)
 
 // Read Form Request
-app.use(bodyParser.json())
+app.use(express.json())
 
 // Read Encode Form Request
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }))
 
 // Main Web Route
 app.get('/', (permintaan, respon) => {
