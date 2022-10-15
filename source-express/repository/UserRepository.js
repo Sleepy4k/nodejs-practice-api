@@ -1,10 +1,4 @@
-var fs = require('fs')
-
-// Get Config File
-var { system } = require('../config/path')
-
-// Database Location
-var userData = `./${system.database}/users.json`
+var model = require('../models/users')
 
 module.exports = {
     /**
@@ -13,10 +7,7 @@ module.exports = {
      * @return Array
      */
     getUserData: function() {
-        var dataBuffer = fs.readFileSync(userData)
-        var dataJSON = dataBuffer.toString()
-
-        return JSON.parse(dataJSON)
+        return model.get()
     },
     
     /**
@@ -27,10 +18,17 @@ module.exports = {
      * @return Bool
      */
     saveUserData: function(body) {
-        var stringifyData = JSON.stringify(body)
-
-        fs.writeFileSync(userData, stringifyData)
-
-        return true
+        return model.store(body)
     },
+
+    /**
+     * Display a specified model.
+     *
+     * @param int id
+     * 
+     * @return Array
+     */
+    findUserData: function(id) {
+        return model.find(id)
+    }
 }
