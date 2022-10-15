@@ -8,6 +8,7 @@ var { port, name, env, url } = require('./config/app')
 
 // List Route
 var users = require(`./${system.router}/users`)
+var tasks = require(`./${system.router}/tasks`)
 
 // Read Form Request
 app.use(express.json())
@@ -24,7 +25,8 @@ app.get('/', (permintaan, respon) => {
     respon.send('Halo Dunia!')
 })
 
-app.use(users)
+app.use('/api', users)
+app.use('/api', tasks)
 
 // Listen Web
 app.listen(port, () => {
