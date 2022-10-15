@@ -1,7 +1,10 @@
-const fs = require('fs')
+var fs = require('fs')
+
+// Const for config
+var databasePath = process.env.DB_PATH || 'database'
 
 // Database Location
-const userData = `./${process.env.DB_PATH}/users.json`
+var userData = `./${databasePath}/users.json`
 
 // Response Json Trait
 function responseData(permintaan, params) {
@@ -16,28 +19,39 @@ function responseData(permintaan, params) {
         data: params.data
     }
 
-    return body;
+    return body
 }
 
 // Read Database User File
 function getUserData() {
-    const jsonData = fs.readFileSync(userData)
+    var dataBuffer = fs.readFileSync(userData)
+    var dataJSON = dataBuffer.toString()
 
-    return JSON.parse(jsonData)
+    return JSON.parse(dataJSON)
 }
 
 // Write Database User File
 function saveUserData(body) {
-    const stringifyData = JSON.stringify(body)
+    var stringifyData = JSON.stringify(body)
     fs.writeFileSync(userData, stringifyData)
 }
 
 // Main Module CRUD
 module.exports = {
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * 
+     * @return Array json
+     */
     index: (permintaan, respon) => {
-        if (getUserData().length > 0) {
+        var users = getUserData()
+
+        if (users.length > 0) {
             respon.json(responseData(permintaan, {
-                data: getUserData()
+                data: users
             }))
         } else {
             respon.json(responseData(permintaan, {
@@ -46,32 +60,54 @@ module.exports = {
             }))
         }
     },
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * 
+     * @return Array json
+     */
     store: (permintaan, respon) => {
-        const form = permintaan.body
-        const object = getUserData()
+        var users = getUserData()
+        var form = permintaan.body
+        var duplicate = users.find((user) => user.urutan == form.urutan)
     
-        if (object.find(user => user.urutan == form.urutan)) {
-            return respon.json(responseData(permintaan, {
+        if (!duplicate) {
+            users.push(form)
+    
+            saveUserData(users)
+        
+            respon.json(responseData(permintaan, {
+                message: "Data berhasil ditambahkan",
+                data: getUserData()
+            }))
+        } else {
+            respon.json(responseData(permintaan, {
                 status: false,
                 message: "Data id terduplikat"
             }))
         }
-
-        object.push(form)
-    
-        saveUserData(object)
-    
-        respon.json(responseData(permintaan, {
-            message: "Data berhasil ditambahkan",
-            data: getUserData()
-        }))
     },
+    
+    /**
+     * Display a specified resource.
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * @param Int id
+     * 
+     * @return Array json
+     */
     show: (permintaan, respon) => {
-        const data = getUserData().find(user => user.urutan == permintaan.params.id);
+        var users = getUserData()
+        var urutan = permintaan.params.id
+        var isExist = users.find((user) => user.urutan == urutan)
 
-        if (data) {
+        if (isExist) {
             respon.json(responseData(permintaan, {
-                data: data
+                data: isExist
             }))
         } else {
             respon.json(responseData(permintaan, {
@@ -80,46 +116,58 @@ module.exports = {
             }))
         }
     },
+    
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * @param Int id
+     * 
+     * @return Array json
+     */
     update: (permintaan, respon) => {
-        const urutan = permintaan.params.id
-        const users = getUserData()
+        var users = getUserData()
+        var forms = permintaan.body
+        var urutan = permintaan.params.id - 1
 
-        if (!users.find(user => user.urutan == urutan)) {
-            return respon.json(responseData(permintaan, {
-                status: false,
-                message: "Data tidak ditemukan"
-            }))
-        }
+        users[urutan].nama = forms.nama
+        users[urutan].email = forms.email
 
-        const updatedUser = users.filter(user => user.urutan !== urutan)
-
-        updatedUser.push(permintaan.body)
-
-        saveUserData(updatedUser)
+        saveUserData(users)
 
         respon.json(responseData(permintaan, {
             message: "Data berhasil diubah",
-            data: getUserData()
+            data: users
         }))
     },
+    
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request permintaan
+     * @param Response respon
+     * @param Int id
+     * 
+     * @return Array json
+     */
     delete: (permintaan, respon) => {
-        const urutan = permintaan.params.id
-        const users = getUserData()
+        var users = getUserData()
+        var urutan = permintaan.params.id
+        var usersToKepp = users.filter((user) => user.urutan != urutan)
 
-        if (!users.find(user => user.urutan == urutan)) {
-            return respon.json(responseData(permintaan, {
+        if (users.length > usersToKepp.length) {
+            saveUserData(usersToKepp)
+
+            respon.json(responseData(permintaan, {
+                message: "Data berhasil dihapus",
+                data: usersToKepp
+            }))
+        } else {
+            respon.json(responseData(permintaan, {
                 status: false,
                 message: "Data tidak ditemukan"
             }))
         }
-
-        const data = users.filter( user => user.urutan !== urutan )
-        
-        saveUserData(data)
-
-        respon.json(responseData(permintaan, {
-            message: "Data berhasil dihapus",
-            data: users
-        }))
     },
 }
