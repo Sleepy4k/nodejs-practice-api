@@ -1,4 +1,7 @@
-var model = require('../modules/model')
+var { system } = require('../config/path')
+
+// Get model handler
+var model = require(`../${system.modules}/model`)
 
 // Database Column
 var column = 'users'

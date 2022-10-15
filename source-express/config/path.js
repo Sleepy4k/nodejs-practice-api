@@ -10,6 +10,8 @@ module.exports = {
     system: {
         trait: process.env.PATH_TRAIT || 'traits',
         router: process.env.PATH_ROUTER || 'routes',
+        models: process.env.PATH_MODELS || 'models',
+        modules: process.env.PATH_MODULES || 'modules',
         database: process.env.PATH_DATABASE || 'database',
         controller: process.env.PATH_CONTROLLER || 'controller',
         repository: process.env.PATH_REPOSITORY || 'repository'

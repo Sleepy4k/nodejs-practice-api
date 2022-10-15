@@ -1,4 +1,7 @@
-var model = require('../models/users')
+var { system } = require('../config/path')
+
+// Get users model
+var model = require(`../${system.models}/users`)
 
 module.exports = {
     /**
