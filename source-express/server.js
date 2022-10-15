@@ -28,7 +28,7 @@ app.use(users)
 
 // Listen Web
 app.listen(port, () => {
-    console.log()
+    console.log('--------------------------------------')
     
     if (env == 'local') {
         console.log(chalk.red.bold(`[${name}] Warning you running this server in ${env} mode`));
