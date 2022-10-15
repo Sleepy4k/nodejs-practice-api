@@ -1,16 +1,13 @@
 var express = require('express')
+var chalk = require("chalk")
 var app = express()
 
 // Get Config File
-require('dotenv/config')
-
-// data for config
-var name = process.env.APP_NAME || 'Express'
-var port = process.env.APP_PORT || '3000'
-var routePath = process.env.PATH_ROUTER || 'routes'
+var { system } = require('./config/path')
+var { port, name, env, url } = require('./config/app')
 
 // List Route
-var users = require(`./${routePath}/users`)
+var users = require(`./${system.router}/users`)
 
 // Read Form Request
 app.use(express.json())
@@ -20,6 +17,10 @@ app.use(express.urlencoded({ extended: true }))
 
 // Main Web Route
 app.get('/', (permintaan, respon) => {
+    if (env == 'local') {
+        console.log(chalk.yellow.bold(`[${name}] Response: Halo Dunia!`));
+    }
+
     respon.send('Halo Dunia!')
 })
 
@@ -27,5 +28,12 @@ app.use(users)
 
 // Listen Web
 app.listen(port, () => {
-    console.log(`${name} listening on port ${port}`)
+    console.log()
+    
+    if (env == 'local') {
+        console.log(chalk.red.bold(`[${name}] Warning you running this server in ${env} mode`));
+    }
+
+    console.log(chalk.green.bold(`[${name}] ${name} listening on port ${port}`))
+    console.log(chalk.green.bold(`[${name}] server serve at ${url}`))
 })
