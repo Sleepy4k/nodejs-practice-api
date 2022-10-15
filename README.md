@@ -3,10 +3,13 @@
 
 ## Key Features
 
-C = Create user data
-R = Read user data
-U = Update user data
-D = Delete user data
+<span>C = Create user data</span>
+<br>
+<span>R = Read user data</span>
+<br>
+<span>U = Update user data</span>
+<br>
+<span>D = Delete user data</span>
 
 ## How To Use
 
@@ -22,7 +25,7 @@ $ git clone https://github.com/Sleepy4k/nodejs-practice-api.git
 $ cd nodejs-practice-ap
 
 # Go into your main target (http, express, etc)
-$ cd module-(your target)
+$ cd source-(your target)
 
 # Install dependencies
 $ npm install
