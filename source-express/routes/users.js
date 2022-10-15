@@ -1,8 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
+// Const for config
+var controllerPath = process.env.PATH_CONTROLLER || 'controller'
+
 // Controller
-const userController = require(`../${process.env.PATH_CONTROLLER}/users`)
+const userController = require(`../${controllerPath}/users`)
 
 // Main Route
 router.get('/users', userController.index)
