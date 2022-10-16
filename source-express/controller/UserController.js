@@ -25,7 +25,7 @@ module.exports = {
 
         if (users.length > 0) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: ${users}`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', JSON.stringify(users)))))
             }
 
             return responseData.success(permintaan, respon, {
@@ -33,11 +33,11 @@ module.exports = {
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data masih kosong`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.empty')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data masih kosong"
+                message: respon.__('data.empty')
             })
         }
     },
@@ -55,13 +55,27 @@ module.exports = {
         var users = userRepository.getUserData()
 
         if (!form.urutan || !form.nama || !form.email) {
+            var error = []
+
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data gagal untuk dibuat`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
+            }
+
+            if (!form.urutan) {
+                error.push(respon.__('validation.required', 'urutan'))
+            }
+
+            if (!form.nama) {
+                error.push(respon.__('validation.required', 'nama'))
+            }
+
+            if (!form.email) {
+                error.push(respon.__('validation.required', 'email'))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data gagal untuk dibuat",
-                error: "Formulir urutan, nama dan email harus di isi"
+                message: respon.__('data.failed'),
+                error: error
             })
         }
 
@@ -69,12 +83,12 @@ module.exports = {
     
         if (duplicate) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data gagal untuk dibuat`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data gagal untuk dibuat",
-                error: "Data id terduplikat"
+                message: respon.__('data.failed'),
+                error: respon.__('data.duplicate')
             })
         } else {
             users.push(form)
@@ -82,11 +96,11 @@ module.exports = {
             userRepository.saveUserData(users)
         
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data berhasil ditambahkan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.add'))))))
             }
 
             return responseData.success(permintaan, respon, {
-                message: "Data berhasil ditambahkan",
+                message: respon.__('data.success', respon.__('operator.add')),
                 data: userRepository.getUserData()
             })
         }
@@ -107,7 +121,7 @@ module.exports = {
 
         if (isExist) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: ${isExist}`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', JSON.stringify(isExist)))))
             }
 
             return responseData.success(permintaan, respon, {
@@ -115,11 +129,11 @@ module.exports = {
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data tidak ditemukan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data tidak ditemukan"
+                message: respon.__('data.not_found')
             })
         }
     },
@@ -141,11 +155,11 @@ module.exports = {
 
         if (!isExist) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data tidak ditemukan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data tidak ditemukan"
+                message: respon.__('data.not_found')
             })
         }
 
@@ -158,21 +172,31 @@ module.exports = {
             userRepository.saveUserData(users)
     
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data berhasil diubah`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.change'))))))
             }
 
             return responseData.success(permintaan, respon, {
-                message: "Data berhasil diubah",
+                message: respon.__('data.success', respon.__('operator.change')),
                 data: users
             })
         } else {
+            var error = []
+
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data gagal untuk dibuat`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
+            }
+
+            if (!form.nama) {
+                error.push(respon.__('validation.required', 'nama'))
+            }
+
+            if (!form.email) {
+                error.push(respon.__('validation.required', 'email'))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data gagal untuk dibuat",
-                error: "Formulir nama dan email harus di isi"
+                message: respon.__('data.failed'),
+                error: error
             })
         }
     },
@@ -195,20 +219,20 @@ module.exports = {
             userRepository.saveUserData(usersToKepp)
 
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data berhasil dihapus`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.delete'))))))
             }
 
             return responseData.success(permintaan, respon, {
-                message: "Data berhasil dihapus",
+                message: respon.__('data.success', respon.__('operator.delete')),
                 data: usersToKepp
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data tidak ditemukan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data tidak ditemukan"
+                message: respon.__('data.not_found')
             })
         }
     },

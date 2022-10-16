@@ -25,7 +25,7 @@ module.exports = {
 
         if (tasks.length > 0) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: ${tasks}`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', JSON.stringify(tasks)))))
             }
 
             return responseData.success(permintaan, respon, {
@@ -33,11 +33,11 @@ module.exports = {
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data masih kosong`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.empty')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data masih kosong"
+                message: respon.__('data.empty')
             })
         }
     },
@@ -55,13 +55,23 @@ module.exports = {
         var tasks = taskRepository.getTaskData()
 
         if (!form.urutan || !form.tugas) {
+            var error = []
+
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data gagal untuk dibuat`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
+            }
+
+            if (!form.urutan) {
+                error.push(respon.__('validation.required', 'urutan'))
+            }
+
+            if (!form.tugas) {
+                error.push(respon.__('validation.required', 'tugas'))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data gagal untuk dibuat",
-                error: "Formulir urutan dan tugas harus di isi"
+                message: respon.__('data.failed'),
+                error: error
             })
         }
 
@@ -69,12 +79,12 @@ module.exports = {
     
         if (duplicate) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data gagal untuk dibuat`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data gagal untuk dibuat",
-                error: "Data id terduplikat"
+                message: respon.__('data.failed'),
+                error: respon.__('data.duplicate')
             })
         } else {
             tasks.push(form)
@@ -82,11 +92,11 @@ module.exports = {
             taskRepository.saveTaskData(tasks)
         
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data berhasil ditambahkan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.add'))))))
             }
 
             return responseData.success(permintaan, respon, {
-                message: "Data berhasil ditambahkan",
+                message: respon.__('data.success', respon.__('operator.add')),
                 data: taskRepository.getTaskData()
             })
         }
@@ -107,7 +117,7 @@ module.exports = {
 
         if (isExist) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: ${isExist}`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', JSON.stringify(isExist)))))
             }
 
             return responseData.success(permintaan, respon, {
@@ -115,11 +125,11 @@ module.exports = {
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data tidak ditemukan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data tidak ditemukan"
+                message: respon.__('data.not_found')
             })
         }
     },
@@ -141,11 +151,11 @@ module.exports = {
 
         if (!isExist) {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data tidak ditemukan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data tidak ditemukan"
+                message: respon.__('data.not_found')
             })
         }
 
@@ -157,21 +167,21 @@ module.exports = {
             taskRepository.saveTaskData(tasks)
     
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data berhasil diubah`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.change'))))))
             }
 
             return responseData.success(permintaan, respon, {
-                message: "Data berhasil diubah",
+                message: respon.__('data.success', respon.__('operator.change')),
                 data: tasks
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data gagal untuk dibuat`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data gagal untuk dibuat",
-                error: "Formulir tugas harus di isi"
+                message: respon.__('data.failed'),
+                error: respon.__('validation.required', 'tugas')
             })
         }
     },
@@ -194,20 +204,20 @@ module.exports = {
             taskRepository.saveTaskData(tasksToKepp)
 
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data berhasil dihapus`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.delete'))))))
             }
 
             return responseData.success(permintaan, respon, {
-                message: "Data berhasil dihapus",
+                message: respon.__('data.success', respon.__('operator.delete')),
                 data: tasksToKepp
             })
         } else {
             if (env == 'local') {
-                console.log(chalk.yellow.bold(`[${name}] Response: Data tidak ditemukan`));
+                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
             }
 
             return responseData.error(permintaan, respon, {
-                message: "Data tidak ditemukan"
+                message: respon.__('data.not_found')
             })
         }
     },
