@@ -1,7 +1,5 @@
-var chalk = require("chalk")
-
-// Get Config File
-var { env, name } = require('../../config/app')
+// Traits
+var print = require(`./consoleLogger`)
 
 module.exports = {
     /**
@@ -13,10 +11,10 @@ module.exports = {
      * 
      * @return Array
      */
-    success: function(permintaan, respon, params) {
-        if (env == 'local') {
-            console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', 'create success response api'))))
-        }
+    success: function(permintaan, respon, params, code) {
+        print.info('create success response api')
+
+        respon.status(code || 200)
 
         respon.json({
             status: true,
@@ -39,10 +37,10 @@ module.exports = {
      * 
      * @return Array
      */
-    error: function(permintaan, respon, params) {
-        if (env == 'local') {
-            console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', 'create error response api'))))
-        }
+    error: function(permintaan, respon, params, code) {
+        print.info('create error response api')
+
+        respon.status(code || 500)
 
         respon.json({
             status: false,
