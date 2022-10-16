@@ -14,7 +14,7 @@ module.exports = {
         modules: process.env.PATH_MODULES || 'modules',
         translate: process.env.PATH_TRANSLATE || 'lang',
         database: process.env.PATH_DATABASE || 'database',
-        controller: process.env.PATH_CONTROLLER || 'controller',
-        repository: process.env.PATH_REPOSITORY || 'repository'
+        controller: process.env.PATH_CONTROLLER || 'controllers',
+        repository: process.env.PATH_REPOSITORY || 'repositories'
     }
 };
