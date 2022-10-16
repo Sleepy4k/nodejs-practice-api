@@ -1,3 +1,8 @@
+var chalk = require("chalk")
+
+// Get Config File
+var { env, name } = require('../config/app')
+
 module.exports = {
     /**
      * Create success respon body
@@ -9,6 +14,10 @@ module.exports = {
      * @return Array
      */
     success: function(permintaan, respon, params) {
+        if (env == 'local') {
+            console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', 'create success response api'))))
+        }
+
         respon.json({
             status: true,
             message: params.message,
@@ -31,6 +40,10 @@ module.exports = {
      * @return Array
      */
     error: function(permintaan, respon, params) {
+        if (env == 'local') {
+            console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', 'create error response api'))))
+        }
+
         respon.json({
             status: false,
             message: params.message,
