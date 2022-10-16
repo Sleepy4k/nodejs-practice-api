@@ -1,5 +1,4 @@
-var express = require('express')
-var router = express.Router()
+var router = require('express').Router()
 
 // Get Config File
 var { system } = require('../config/path')
