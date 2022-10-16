@@ -1,15 +1,17 @@
 var fs = require('fs')
-var chalk = require("chalk")
+var path = require('path')
 
 // Get Config File
-var { env, name } = require('../../../config/app')
 var { system } = require('../../../config/path')
+
+// Traits
+var print = require(`../../${system.trait}/consoleLogger`)
 
 // Validate database
 var database = require('./database')
 
 // Database Location
-var dbPath = `./${system.database}`
+var dbPath = path.join(__dirname, `../../../${system.database}`)
 
 module.exports = {
     /**
@@ -27,18 +29,14 @@ module.exports = {
                 fs.statSync(path)
             }
 
-            if (env == 'local') {
-                console.log(chalk.blue.bold(`[${name}] Response: database file exist`));
-            }
+            print.info('database file exist')
 
             return true
         } catch (error) {
             fs.closeSync(fs.openSync(path, 'w'))
             fs.writeFileSync(path, '[]')
 
-            if (env == 'local') {
-                console.log(chalk.red.bold(`[${name}] Response: ${error}`));
-            }
+            print.error(error)
 
             return module.exports.exist(file)
         }
@@ -62,9 +60,7 @@ module.exports = {
                 return JSON.parse(dataString)
             }
         } catch (error) {
-            if (env == 'local') {
-                console.log(chalk.red.bold(`[${name}] Response: ${error}`));
-            }
+            print.error(error)
         }
     },
 
@@ -87,9 +83,7 @@ module.exports = {
                 return dataSaved
             }
         } catch (error) {
-            if (env == 'local') {
-                console.log(chalk.red.bold(`[${name}] Response: ${error}`));
-            }
+            print.error(error)
         }
     },
 
@@ -108,9 +102,7 @@ module.exports = {
 
             return user
         } catch (error) {
-            if (env == 'local') {
-                console.log(chalk.red.bold(`[${name}] Response: ${error}`));
-            }
+            print.error(error)
         }
     }
 }

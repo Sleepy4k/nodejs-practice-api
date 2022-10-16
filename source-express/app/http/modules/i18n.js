@@ -1,13 +1,15 @@
-var express = require('express')
+var router = require('express').Router()
 var { I18n } = require('i18n')
-var router = express.Router()
-var chalk = require("chalk")
 var path = require('path')
 
 // Get Config File
-var { name, env, locale } = require('../../../config/app')
+var { locale } = require('../../../config/app')
 var { system } = require('../../../config/path')
 
+// Traits
+var print = require(`../../${system.trait}/consoleLogger`)
+
+// I18N Configuration
 var i18n = new I18n({
     // setup some locales - other locales default to en silently
     locales: ['en', 'id'],
@@ -36,34 +38,27 @@ var i18n = new I18n({
     // setting extension of json files - defaults to '.json' (you might want to set this to '.js' according to webtranslateit)
     extension: '.json',
 
+    // use tree system of json files - defaults to false
     objectNotation: true,
 
     // setting of log level DEBUG - default to require('debug')('i18n:debug')
     logDebugFn: function (msg) {
-        if (env == 'local') {
-            console.log(chalk.yellow.bold(`[${name}] I18N: debug ${msg}`));
-        }
+        print.debug(`express ${msg}`)
     },
 
     // setting of log level WARN - default to require('debug')('i18n:warn')
     logWarnFn: function (msg) {
-        if (env == 'local') {
-            console.log(chalk.red.bold(`[${name}] I18N: warn ${msg}`));
-        }
+        print.warning(`express ${msg}`)
     },
 
     // setting of log level ERROR - default to require('debug')('i18n:error')
     logErrorFn: function (msg) {
-        if (env == 'local') {
-            console.log(chalk.red.bold(`[${name}] I18N: error ${msg}`));
-        }
+        print.error(`express ${msg}`)
     },
 
     // used to alter the behaviour of missing keys
     missingKeyFn: function (locale, value) {
-        if (env == 'local') {
-            console.log(chalk.red.bold(`[${name}] I18N: missing translate key ${value}, in locale ${locale}`));
-        }
+        print.error(`missing translate key ${value}, in locale ${locale}`)
 
         return value
     }
@@ -72,11 +67,8 @@ var i18n = new I18n({
 // Middleware for translate init
 router.use((permintaan, respon, next) => {
     i18n.init(permintaan, respon)
-    var locale = i18n.getLocale()
 
-    if (env == 'local') {
-        console.log(chalk.blue.bold(`[${name}] I18N: get translate data from ${locale} locale`));
-    }
+    print.info(`get translate data from ${i18n.getLocale()} locale`)
     
     next()
 })

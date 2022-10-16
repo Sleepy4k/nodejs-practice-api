@@ -1,8 +1,9 @@
-var chalk = require("chalk")
-
 // Get Config File
-var { env, name } = require('../../../config/app')
+var { system } = require('../../../config/path')
 var config = require('../../../config/database')
+
+// Traits
+var print = require(`../../${system.trait}/consoleLogger`)
 
 // Validate database config
 function validate(type) {
@@ -11,17 +12,13 @@ function validate(type) {
     
         connection.forEach(element => {
             if (element.driver == type) {
-                if (env == 'local') {
-                    console.log(chalk.green.bold(`[${name}] Response: database connection default exist`));
-                }
+                print.debug('database connection default exist')
 
                 return false
             }
         });
     } catch (error) {
-        if (env == 'local') {
-            console.log(chalk.red.bold(`[${name}] Response: database default error or not exist`));
-        }
+        print.error('database default error or not exist')
 
         return true
     }
