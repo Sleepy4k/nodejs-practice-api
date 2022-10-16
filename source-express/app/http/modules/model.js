@@ -2,8 +2,8 @@ var fs = require('fs')
 var chalk = require("chalk")
 
 // Get Config File
-var { env, name } = require('../config/app')
-var { system } = require('../config/path')
+var { env, name } = require('../../../config/app')
+var { system } = require('../../../config/path')
 
 // Validate database
 var database = require('./database')

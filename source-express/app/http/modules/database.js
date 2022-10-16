@@ -1,8 +1,8 @@
 var chalk = require("chalk")
 
 // Get Config File
-var { env, name } = require('../config/app')
-var config = require('../config/database')
+var { env, name } = require('../../../config/app')
+var config = require('../../../config/database')
 
 // Validate database config
 function validate(type) {

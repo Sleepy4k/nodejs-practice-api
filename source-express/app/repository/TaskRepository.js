@@ -1,4 +1,4 @@
-var { system } = require('../config/path')
+var { system } = require('../../config/path')
 
 // Get users model
 var model = require(`../${system.models}/tasks`)

@@ -5,7 +5,7 @@ var router = express.Router()
 var { system } = require('../config/path')
 
 // Controller
-var taskController = require(`../${system.controller}/TaskController`)
+var taskController = require(`../app/http/${system.controller}/TaskController`)
 
 // Main Route
 router.get('/tasks', taskController.index)

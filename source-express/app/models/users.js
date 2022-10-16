@@ -1,10 +1,10 @@
-var { system } = require('../config/path')
+var { system } = require('../../config/path')
 
 // Get model handler
-var model = require(`../${system.modules}/model`)
+var model = require(`../http/${system.modules}/model`)
 
 // Database Column
-var column = 'tasks'
+var column = 'users'
 
 module.exports = {
     /**

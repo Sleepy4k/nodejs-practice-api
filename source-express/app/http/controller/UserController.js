@@ -1,14 +1,14 @@
 var chalk = require("chalk")
 
 // Get Config File
-var { env, name } = require('../config/app')
-var { system } = require('../config/path')
+var { env, name } = require('../../../config/app')
+var { system } = require('../../../config/path')
 
 // Trait Response
-var responseData = require(`../${system.trait}/responseData`)
+var responseData = require(`../../${system.trait}/responseData`)
 
 // Repository Model
-var userRepository = require(`../${system.repository}/UserRepository`)
+var userRepository = require(`../../${system.repository}/UserRepository`)
 
 // Main Module CRUD
 module.exports = {

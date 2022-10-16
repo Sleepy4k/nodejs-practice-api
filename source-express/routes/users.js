@@ -5,7 +5,7 @@ var router = express.Router()
 var { system } = require('../config/path')
 
 // Controller
-var userController = require(`../${system.controller}/UserController`)
+var userController = require(`../app/http/${system.controller}/UserController`)
 
 // Main Route
 router.get('/users', userController.index)

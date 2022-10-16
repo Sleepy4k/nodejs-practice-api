@@ -1,7 +1,7 @@
 var chalk = require("chalk")
 
 // Get Config File
-var { env, name } = require('../config/app')
+var { env, name } = require('../../config/app')
 
 module.exports = {
     /**

@@ -11,7 +11,7 @@ var users = require(`./${system.router}/users`)
 var tasks = require(`./${system.router}/tasks`)
 
 // Translate System
-var i18n = require('./modules/i18n')
+var i18n = require(`./app/http/${system.modules}/i18n`)
 app.use(i18n)
 
 // Read Form Request

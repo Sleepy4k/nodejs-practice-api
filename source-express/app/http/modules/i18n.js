@@ -5,8 +5,8 @@ var chalk = require("chalk")
 var path = require('path')
 
 // Get Config File
-var { name, env, locale } = require('../config/app')
-var { system } = require('../config/path')
+var { name, env, locale } = require('../../../config/app')
+var { system } = require('../../../config/path')
 
 var i18n = new I18n({
     // setup some locales - other locales default to en silently
@@ -22,7 +22,7 @@ var i18n = new I18n({
     header: 'accept-language',
 
     // where to store json files - defaults to './locales' relative to modules directory
-    directory: path.join(__dirname, `../${system.translate}`),
+    directory: path.join(__dirname, `../../../${system.translate}`),
 
     // watch for changes in JSON files to reload locale on updates - defaults to false
     autoReload: true,
