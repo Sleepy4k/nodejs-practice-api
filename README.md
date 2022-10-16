@@ -22,7 +22,7 @@ if your lazy to find route api list better use this [list](https://github.com/Sl
 $ git clone https://github.com/Sleepy4k/nodejs-practice-api.git
 
 # Go into the repository
-$ cd nodejs-practice-ap
+$ cd nodejs-practice-api
 
 # Go into your main target (http, express, etc)
 $ cd source-(your target)
