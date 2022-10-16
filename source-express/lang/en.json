@@ -14,14 +14,13 @@
         "exist": "The selected %s already exists"
     },
 
+    "route": {
+        "not_found": "Resource not found"
+    },
+
     "operator": {
         "add": "added",
         "change": "changed",
         "delete": "deleted"
-    },
-
-    "debug": {
-        "template": "[%s] %s",
-        "response": "Response: %s"
     }
 }

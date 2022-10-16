@@ -14,14 +14,13 @@
         "exist": "Data %s yang dipilih sudah ada"
     },
 
+    "route": {
+        "not_found": "Resource tidak ditemukan"
+    },
+
     "operator": {
         "add": "ditambahkan",
         "change": "diubah",
         "delete": "dihapus"
-    },
-
-    "debug": {
-        "template": "[%s] %s",
-        "response": "Tanggapan: %s"
     }
 }
