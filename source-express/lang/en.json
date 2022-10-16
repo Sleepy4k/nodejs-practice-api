@@ -1,0 +1,27 @@
+{
+    "greeting": "Hello World",
+
+    "data": {
+        "empty": "Data is still empty",
+        "failed": "Data failed to create",
+        "success": "Data %s successfully",
+        "not_found": "Data not found",
+        "duplicate": "Duplicate ID data"
+    },
+
+    "validation": {
+        "required": "The %s field is required",
+        "exist": "The selected %s already exists"
+    },
+
+    "operator": {
+        "add": "added",
+        "change": "changed",
+        "delete": "deleted"
+    },
+
+    "debug": {
+        "template": "[%s] %s",
+        "response": "Response: %s"
+    }
+}

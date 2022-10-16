@@ -1,0 +1,27 @@
+{
+    "greeting": "Halo Dunia",
+
+    "data": {
+        "empty": "Data masih kosong",
+        "failed": "Data gagal dibuat",
+        "success": "Data berhasil %s",
+        "not_found": "Data tidak ditemukan",
+        "duplicate": "Duplikat data ID"
+    },
+
+    "validation": {
+        "required": "Formulir %s wajib diisi",
+        "exist": "Data %s yang dipilih sudah ada"
+    },
+
+    "operator": {
+        "add": "ditambahkan",
+        "change": "diubah",
+        "delete": "dihapus"
+    },
+
+    "debug": {
+        "template": "[%s] %s",
+        "response": "Tanggapan: %s"
+    }
+}
