@@ -1,10 +1,8 @@
-var chalk = require("chalk")
-
 // Get Config File
-var { env, name } = require('../../../config/app')
 var { system } = require('../../../config/path')
 
-// Trait Response
+// Traits
+var print = require(`../../${system.trait}/consoleLogger`)
 var responseData = require(`../../${system.trait}/responseData`)
 
 // Repository Model
@@ -23,21 +21,17 @@ module.exports = {
     index: (permintaan, respon) => {
         var users = userRepository.getUserData()
 
-        if (users.length > 0) {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', JSON.stringify(users)))))
-            }
-
-            return responseData.success(permintaan, respon, {
-                data: users
-            })
-        } else {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.empty')))))
-            }
+        if (users.length <= 0) {
+            print.info(respon.__('data.empty'))
 
             return responseData.error(permintaan, respon, {
                 message: respon.__('data.empty')
+            })
+        } else {
+            print.info(JSON.stringify(users))
+
+            return responseData.success(permintaan, respon, {
+                data: users
             })
         }
     },
@@ -57,10 +51,6 @@ module.exports = {
         if (!form.urutan || !form.nama || !form.email) {
             var error = []
 
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
-            }
-
             if (!form.urutan) {
                 error.push(respon.__('validation.required', 'urutan'))
             }
@@ -73,6 +63,8 @@ module.exports = {
                 error.push(respon.__('validation.required', 'email'))
             }
 
+            print.error(respon.__('data.failed'))
+
             return responseData.error(permintaan, respon, {
                 message: respon.__('data.failed'),
                 error: error
@@ -82,9 +74,7 @@ module.exports = {
         var duplicate = users.find((user) => user.urutan == form.urutan)
     
         if (duplicate) {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
-            }
+            print.error(respon.__('data.failed'))
 
             return responseData.error(permintaan, respon, {
                 message: respon.__('data.failed'),
@@ -95,9 +85,7 @@ module.exports = {
         
             userRepository.saveUserData(users)
         
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.add'))))))
-            }
+            print.info(respon.__('data.success', respon.__('operator.add')))
 
             return responseData.success(permintaan, respon, {
                 message: respon.__('data.success', respon.__('operator.add')),
@@ -119,21 +107,17 @@ module.exports = {
         var urutan = permintaan.params.id
         var isExist = userRepository.findUserData(urutan)
 
-        if (isExist) {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', JSON.stringify(isExist)))))
-            }
-
-            return responseData.success(permintaan, respon, {
-                data: isExist
-            })
-        } else {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
-            }
+        if (!isExist) {
+            print.error(respon.__('data.not_found'))
 
             return responseData.error(permintaan, respon, {
                 message: respon.__('data.not_found')
+            })
+        } else {
+            print.info(JSON.stringify(isExist))
+
+            return responseData.success(permintaan, respon, {
+                data: isExist
             })
         }
     },
@@ -154,37 +138,15 @@ module.exports = {
         var isExist = userRepository.findUserData(urutan)
 
         if (!isExist) {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
-            }
+            print.error(respon.__('data.not_found'))
 
             return responseData.error(permintaan, respon, {
                 message: respon.__('data.not_found')
             })
         }
 
-        if (forms.nama && forms.email) {
-            urutan = urutan - 1
-
-            users[urutan].nama = forms.nama
-            users[urutan].email = forms.email
-    
-            userRepository.saveUserData(users)
-    
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.change'))))))
-            }
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.change')),
-                data: users
-            })
-        } else {
+        if (!forms.nama || !forms.email) {
             var error = []
-
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.failed')))))
-            }
 
             if (!form.nama) {
                 error.push(respon.__('validation.required', 'nama'))
@@ -194,9 +156,25 @@ module.exports = {
                 error.push(respon.__('validation.required', 'email'))
             }
 
+            print.error(respon.__('data.failed'))
+
             return responseData.error(permintaan, respon, {
                 message: respon.__('data.failed'),
                 error: error
+            })
+        } else {
+            urutan = urutan - 1
+
+            users[urutan].nama = forms.nama
+            users[urutan].email = forms.email
+    
+            userRepository.saveUserData(users)
+    
+            print.info(respon.__('data.success', respon.__('operator.change')))
+
+            return responseData.success(permintaan, respon, {
+                message: respon.__('data.success', respon.__('operator.change')),
+                data: users
             })
         }
     },
@@ -215,24 +193,20 @@ module.exports = {
         var users = userRepository.getUserData()
         var usersToKepp = users.filter((user) => user.urutan != urutan)
 
-        if (users.length > usersToKepp.length) {
+        if (users.length <= usersToKepp.length) {
+            print.error(respon.__('data.not_found'))
+
+            return responseData.error(permintaan, respon, {
+                message: respon.__('data.not_found')
+            })
+        } else {
             userRepository.saveUserData(usersToKepp)
 
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.success', respon.__('operator.delete'))))))
-            }
+            print.info(respon.__('data.success', respon.__('operator.delete')))
 
             return responseData.success(permintaan, respon, {
                 message: respon.__('data.success', respon.__('operator.delete')),
                 data: usersToKepp
-            })
-        } else {
-            if (env == 'local') {
-                console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('data.not_found')))))
-            }
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
             })
         }
     },
