@@ -12,6 +12,13 @@ var database = require('./database')
 var dbPath = `./${system.database}`
 
 module.exports = {
+    /**
+     * Check if database connection exist
+     *
+     * @param File file
+     * 
+     * @return Bool
+     */
     exist: function(file) {
         var path = `${dbPath}/${file}.json`
 
@@ -36,6 +43,14 @@ module.exports = {
             return module.exports.exist(file)
         }
     },
+
+    /**
+     * Get data from database
+     *
+     * @param File file
+     * 
+     * @return Array
+     */
     get: function(file) {
         var path = `${dbPath}/${file}.json`
 
@@ -52,6 +67,15 @@ module.exports = {
             }
         }
     },
+
+    /**
+     * Store data to database
+     *
+     * @param File file
+     * @param Body body
+     * 
+     * @return Bool
+     */
     store: function(file, body) {
         var path = `${dbPath}/${file}.json`
 
@@ -68,6 +92,15 @@ module.exports = {
             }
         }
     },
+
+    /**
+     * Find data from database
+     *
+     * @param File file
+     * @param Id id
+     * 
+     * @return Array
+     */
     find: function(file, id) {
         try {
             var users = module.exports.get(file)
