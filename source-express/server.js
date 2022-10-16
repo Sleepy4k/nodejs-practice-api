@@ -1,18 +1,22 @@
 var express = require('express')
-var chalk = require("chalk")
 var app = express()
 
 // Get Config File
 var { system } = require('./config/path')
-var { port, name, env, url } = require('./config/app')
+var { port, env, url, debug } = require('./config/app')
 
 // List Route
+var index = require(`./${system.router}/index`)
 var users = require(`./${system.router}/users`)
 var tasks = require(`./${system.router}/tasks`)
 
-// Translate System
+// Middleware
 var i18n = require(`./app/http/${system.modules}/i18n`)
-app.use(i18n)
+var header = require(`./app/http/${system.modules}/header`)
+var fallback = require(`./app/http/${system.modules}/fallback`)
+
+// Traits
+var print = require(`./app/${system.trait}/consoleLogger`)
 
 // Read Form Request
 app.use(express.json())
@@ -20,26 +24,28 @@ app.use(express.json())
 // Read Encode Form Request
 app.use(express.urlencoded({ extended: true }))
 
+// Translate System
+app.use(i18n)
+
+// Write Header
+app.use(header)
+
 // Main Web Route
-app.get('/', (permintaan, respon) => {
-    if (env == 'local') {
-        console.log(chalk.yellow.bold(respon.__('debug.template', name, respon.__('debug.response', respon.__('greeting')))))
-    }
-
-    respon.send(respon.__('greeting'))
-})
-
+app.use(index)
 app.use('/api', users)
 app.use('/api', tasks)
 
+// Fallback when route not found
+app.use(fallback)
+
 // Listen Web
 app.listen(port, () => {
-    console.log('--------------------------------------')
-    
-    if (env == 'local') {
-        console.log(chalk.red.bold(`[${name}] Warning you running this server in ${env} mode`))
+    print.warning(`Warning you running this server in ${env} mode`)
+
+    if (debug) {
+        print.warning(`Warning you running this with debug mode`, true)
     }
 
-    console.log(chalk.green.bold(`[${name}] listening on port ${port}`))
-    console.log(chalk.green.bold(`[${name}] server serve at ${url}`))
+    print.info(`listening on port ${port}`, true)
+    print.info(`server serve at ${url}:${port}`, true)
 })
