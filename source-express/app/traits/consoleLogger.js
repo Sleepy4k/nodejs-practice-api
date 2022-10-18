@@ -47,7 +47,7 @@ module.exports = {
      * @return String
      */
     debug: function(message, bypass) {
-        if (env == 'local' || bypass || debug) {
+        if (env == 'local' || bypass || debug == 'true') {
             console.log(chalk.blue.bold(`[${name}] [${getCurrentDate()}] DEBUG : ${message}`))
         }
     },
