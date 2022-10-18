@@ -8,6 +8,16 @@ var responseData = require(`../../${system.trait}/responseData`)
 // Services
 var userService = require(`../../${system.service}/UserService`)
 
+// Catch Error
+function catchError(permintaan, respon, error) {
+    print.error(error.message)
+
+    return responseData.error(permintaan, respon, {
+        message: 'system error',
+        error: error.message
+    }, 500)
+}
+
 // Main Module CRUD
 module.exports = {
     /**
@@ -22,12 +32,7 @@ module.exports = {
         try {
             userService.index(permintaan, respon)
         } catch (error) {
-            print.error(error.message)
-
-            return responseData.error(permintaan, respon, {
-                message: 'system error',
-                error: error.message
-            }, 500)
+            catchError(permintaan, respon, error)
         }
     },
 
@@ -43,12 +48,7 @@ module.exports = {
         try {
             userService.store(permintaan, respon)
         } catch (error) {
-            print.error(error.message)
-
-            return responseData.error(permintaan, respon, {
-                message: 'system error',
-                error: error.message
-            }, 500)
+            catchError(permintaan, respon, error)
         }
     },
     
@@ -65,12 +65,7 @@ module.exports = {
         try {
             userService.show(permintaan, respon)
         } catch (error) {
-            print.error(error.message)
-
-            return responseData.error(permintaan, respon, {
-                message: 'system error',
-                error: error.message
-            }, 500)
+            catchError(permintaan, respon, error)
         }
     },
     
@@ -87,12 +82,7 @@ module.exports = {
         try {
             userService.update(permintaan, respon)
         } catch (error) {
-            print.error(error.message)
-
-            return responseData.error(permintaan, respon, {
-                message: 'system error',
-                error: error.message
-            }, 500)
+            catchError(permintaan, respon, error)
         }
     },
     
@@ -109,12 +99,7 @@ module.exports = {
         try {
             userService.destroy(permintaan, respon)
         } catch (error) {
-            print.error(error.message)
-
-            return responseData.error(permintaan, respon, {
-                message: 'system error',
-                error: error.message
-            }, 500)
+            catchError(permintaan, respon, error)
         }
     },
 }
