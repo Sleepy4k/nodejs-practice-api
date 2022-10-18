@@ -5,8 +5,8 @@ var { system } = require('../../../config/path')
 var print = require(`../../${system.trait}/consoleLogger`)
 var responseData = require(`../../${system.trait}/responseData`)
 
-// Repository Model
-var taskRepository = require(`../../${system.repository}/TaskRepository`)
+// Services
+var taskService = require(`../../${system.service}/TaskService`)
 
 // Main Module CRUD
 module.exports = {
@@ -19,20 +19,15 @@ module.exports = {
      * @return Array
      */
     index: (permintaan, respon) => {
-        var tasks = taskRepository.getTaskData()
-
-        if (tasks.length <= 0) {
-            print.info(respon.__('data.empty'))
+        try {
+            taskService.index(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
 
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.empty')
-            })
-        } else {
-            print.info(JSON.stringify(tasks))
-
-            return responseData.success(permintaan, respon, {
-                data: tasks
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
 
@@ -45,48 +40,15 @@ module.exports = {
      * @return Array
      */
     store: (permintaan, respon) => {
-        var form = permintaan.body
-        var tasks = taskRepository.getTaskData()
-
-        if (!form.urutan || !form.tugas) {
-            var error = []
-
-            if (!form.urutan) {
-                error.push(respon.__('validation.required', 'urutan'))
-            }
-            
-            if (!form.tugas) {
-                error.push(respon.__('validation.required', 'tugas'))
-            }
-            
-            print.error(respon.__('data.failed'))
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: error
-            })
-        }
-
-        var duplicate = tasks.find((task) => task.urutan == form.urutan)
-    
-        if (duplicate) {
-            print.error(respon.__('data.failed'))
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: respon.__('data.duplicate')
-            })
-        } else {
-            tasks.push(form)
+        try {
+            taskService.store(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
         
-            taskRepository.saveTaskData(tasks)
-        
-            print.info(respon.__('data.success', respon.__('operator.add')))
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.add')),
-                data: taskRepository.getTaskData()
-            })
+            return responseData.error(permintaan, respon, {
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
     
@@ -100,21 +62,15 @@ module.exports = {
      * @return Array
      */
     show: (permintaan, respon) => {
-        var urutan = permintaan.params.id
-        var isExist = taskRepository.findTaskData(urutan)
-
-        if (!isExist) {
-            print.error(respon.__('data.not_found'))
-
+        try {
+            taskService.show(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
+        
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            })
-        } else {
-            print.info(JSON.stringify(isExist))
-
-            return responseData.success(permintaan, respon, {
-                data: isExist
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
     
@@ -128,39 +84,15 @@ module.exports = {
      * @return Array
      */
     update: (permintaan, respon) => {
-        var forms = permintaan.body
-        var urutan = permintaan.params.id
-        var tasks = taskRepository.getTaskData()
-        var isExist = taskRepository.findTaskData(urutan)
-
-        if (!isExist) {
-            print.error(respon.__('data.not_found'))
-
+        try {
+            taskService.update(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
+        
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            })
-        }
-
-        if (!forms.tugas) {
-            print.error(respon.__('data.failed'))
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: respon.__('validation.required', 'tugas')
-            })
-        } else {
-            urutan = urutan - 1
-
-            tasks[urutan].tugas = forms.tugas
-    
-            taskRepository.saveTaskData(tasks)
-    
-            print.info(respon.__('data.success', respon.__('operator.change')))
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.change')),
-                data: tasks
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
     
@@ -174,25 +106,15 @@ module.exports = {
      * @return Array
      */
     destroy: (permintaan, respon) => {
-        var urutan = permintaan.params.id
-        var tasks = taskRepository.getTaskData()
-        var tasksToKepp = tasks.filter((task) => task.urutan != urutan)
-
-        if (tasks.length <= tasksToKepp.length) {
-            print.error(respon.__('data.not_found'))
-
+        try {
+            taskService.destroy(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
+        
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            })
-        } else {
-            taskRepository.saveTaskData(tasksToKepp)
-
-            print.info(respon.__('data.success', respon.__('operator.delete')))
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.delete')),
-                data: tasksToKepp
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
 }

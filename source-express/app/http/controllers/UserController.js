@@ -5,8 +5,8 @@ var { system } = require('../../../config/path')
 var print = require(`../../${system.trait}/consoleLogger`)
 var responseData = require(`../../${system.trait}/responseData`)
 
-// Repository Model
-var userRepository = require(`../../${system.repository}/UserRepository`)
+// Services
+var userService = require(`../../${system.service}/UserService`)
 
 // Main Module CRUD
 module.exports = {
@@ -19,20 +19,15 @@ module.exports = {
      * @return Array
      */
     index: (permintaan, respon) => {
-        var users = userRepository.getUserData()
-
-        if (users.length <= 0) {
-            print.info(respon.__('data.empty'))
+        try {
+            userService.index(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
 
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.empty')
-            })
-        } else {
-            print.info(JSON.stringify(users))
-
-            return responseData.success(permintaan, respon, {
-                data: users
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
 
@@ -45,52 +40,15 @@ module.exports = {
      * @return Array
      */
     store: (permintaan, respon) => {
-        var form = permintaan.body
-        var users = userRepository.getUserData()
-
-        if (!form.urutan || !form.nama || !form.email) {
-            var error = []
-
-            if (!form.urutan) {
-                error.push(respon.__('validation.required', 'urutan'))
-            }
-
-            if (!form.nama) {
-                error.push(respon.__('validation.required', 'nama'))
-            }
-
-            if (!form.email) {
-                error.push(respon.__('validation.required', 'email'))
-            }
-
-            print.error(respon.__('data.failed'))
+        try {
+            userService.store(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
 
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: error
-            })
-        }
-
-        var duplicate = users.find((user) => user.urutan == form.urutan)
-    
-        if (duplicate) {
-            print.error(respon.__('data.failed'))
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: respon.__('data.duplicate')
-            })
-        } else {
-            users.push(form)
-        
-            userRepository.saveUserData(users)
-        
-            print.info(respon.__('data.success', respon.__('operator.add')))
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.add')),
-                data: userRepository.getUserData()
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
     
@@ -104,21 +62,15 @@ module.exports = {
      * @return Array
      */
     show: (permintaan, respon) => {
-        var urutan = permintaan.params.id
-        var isExist = userRepository.findUserData(urutan)
-
-        if (!isExist) {
-            print.error(respon.__('data.not_found'))
+        try {
+            userService.show(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
 
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            })
-        } else {
-            print.info(JSON.stringify(isExist))
-
-            return responseData.success(permintaan, respon, {
-                data: isExist
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
     
@@ -132,50 +84,15 @@ module.exports = {
      * @return Array
      */
     update: (permintaan, respon) => {
-        var forms = permintaan.body
-        var urutan = permintaan.params.id
-        var users = userRepository.getUserData()
-        var isExist = userRepository.findUserData(urutan)
-
-        if (!isExist) {
-            print.error(respon.__('data.not_found'))
+        try {
+            userService.update(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
 
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            })
-        }
-
-        if (!forms.nama || !forms.email) {
-            var error = []
-
-            if (!form.nama) {
-                error.push(respon.__('validation.required', 'nama'))
-            }
-
-            if (!form.email) {
-                error.push(respon.__('validation.required', 'email'))
-            }
-
-            print.error(respon.__('data.failed'))
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: error
-            })
-        } else {
-            urutan = urutan - 1
-
-            users[urutan].nama = forms.nama
-            users[urutan].email = forms.email
-    
-            userRepository.saveUserData(users)
-    
-            print.info(respon.__('data.success', respon.__('operator.change')))
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.change')),
-                data: users
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
     
@@ -189,25 +106,15 @@ module.exports = {
      * @return Array
      */
     destroy: (permintaan, respon) => {
-        var urutan = permintaan.params.id
-        var users = userRepository.getUserData()
-        var usersToKepp = users.filter((user) => user.urutan != urutan)
-
-        if (users.length <= usersToKepp.length) {
-            print.error(respon.__('data.not_found'))
+        try {
+            userService.destroy(permintaan, respon)
+        } catch (error) {
+            print.error(error.message)
 
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            })
-        } else {
-            userRepository.saveUserData(usersToKepp)
-
-            print.info(respon.__('data.success', respon.__('operator.delete')))
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.delete')),
-                data: usersToKepp
-            })
+                message: 'system error',
+                error: error.message
+            }, 500)
         }
     },
 }
