@@ -42,7 +42,7 @@ app.use(fallback)
 app.listen(port, () => {
     print.warning(`Warning you running this server in ${env} mode`)
 
-    if (debug) {
+    if (debug == 'true') {
         print.warning(`Warning you running this with debug mode`, true)
     }
 
