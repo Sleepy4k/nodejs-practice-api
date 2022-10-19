@@ -8,6 +8,7 @@ module.exports = {
     */
 
     system: {
+        tests: process.env.PATH_TESTS || 'tests',
         trait: process.env.PATH_TRAIT || 'traits',
         router: process.env.PATH_ROUTER || 'routes',
         models: process.env.PATH_MODELS || 'models',
