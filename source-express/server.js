@@ -1,22 +1,14 @@
 var express = require('express')
-var app = express()
 
 // Get Config File
 var { system } = require('./config/path')
 var { port, env, url, debug } = require('./config/app')
 
-// List Route
-var index = require(`./${system.router}/index`)
-var users = require(`./${system.router}/users`)
-var tasks = require(`./${system.router}/tasks`)
-
-// Middleware
-var i18n = require(`./app/http/${system.modules}/i18n`)
-var header = require(`./app/http/${system.modules}/header`)
-var fallback = require(`./app/http/${system.modules}/fallback`)
-
 // Traits
 var print = require(`./app/${system.trait}/consoleLogger`)
+
+// Express init
+var app = express()
 
 // Read Form Request
 app.use(express.json())
@@ -25,18 +17,28 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Translate System
-app.use(i18n)
+app.use(require(`./app/http/${system.modules}/i18n`))
 
 // Write Header
-app.use(header)
+app.use(require(`./app/http/${system.modules}/header`))
 
 // Main Web Route
-app.use(index)
-app.use('/api', users)
-app.use('/api', tasks)
+app.use(require(`./${system.router}`))
 
 // Fallback when route not found
-app.use(fallback)
+app.use(require(`./app/http/${system.modules}/fallback`))
+
+// Developer Mode
+if (env == 'local') {
+    // Import Module
+    var testModule = require(`./${system.tests}/${system.modules}/testModule`)
+    
+    // Init Module
+    app.use(testModule)
+    
+    // Main Route
+    app.use(require(`./${system.tests}/${system.router}`))
+}
 
 // Listen Web
 app.listen(port, () => {
