@@ -1,5 +1,6 @@
 // Get Config File
 var { system } = require('../../config/path')
+var database = require('../../config/database')
 
 // Traits
 var print = require(`../${system.trait}/consoleLogger`)
@@ -18,23 +19,29 @@ module.exports = {
      * 
      * @return Array
      */
-    index: (permintaan, respon) => {
-        var users = userRepository.getUserData()
+    index: async (permintaan, respon) => {
+        try {
+            var users = await userRepository.getUserData()
 
-        if (users.length <= 0) {
-            print.info(respon.__('data.empty'))
-            print.debug('request from client to get task data success but empty')
+            if (users.length <= 0) {
+                print.info(respon.__('data.empty'))
+                print.debug('request from client to get user data success but empty')
 
+                return responseData.error(permintaan, respon, {
+                    message: respon.__('data.empty')
+                })
+            } else {
+                print.info(JSON.stringify(users))
+                print.debug('request from client to get user data success')
+
+                return responseData.success(permintaan, respon, {
+                    data: users
+                })
+            }
+        } catch (error) {
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.empty')
-            })
-        } else {
-            print.info(JSON.stringify(users))
-            print.debug('request from client to get task data success')
-
-            return responseData.success(permintaan, respon, {
-                data: users
-            })
+                error: error.message
+            }, 500)
         }
     },
 
@@ -46,56 +53,75 @@ module.exports = {
      * 
      * @return Array
      */
-    store: (permintaan, respon) => {
+    store: async (permintaan, respon) => {
         var form = permintaan.body
-        var users = userRepository.getUserData()
 
-        if (!form.urutan || !form.nama || !form.email) {
-            var error = []
-
-            if (!form.urutan) {
-                error.push(respon.__('validation.required', 'urutan'))
-            }
-
-            if (!form.nama) {
-                error.push(respon.__('validation.required', 'nama'))
-            }
-
-            if (!form.email) {
-                error.push(respon.__('validation.required', 'email'))
-            }
-
-            print.error(respon.__('data.failed'))
-            print.debug('request from client to store task data failed due missing form data')
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: error
-            }, 400)
-        }
-
-        var duplicate = users.find((user) => user.urutan == form.urutan)
+        try {
+            if (database.default == 'file') {
+                var users = userRepository.getUserData()
     
-        if (duplicate) {
-            print.error(respon.__('data.failed'))
-            print.debug('request from client to store task data failed due duplicated')
-
+                if (!form.urutan || !form.nama || !form.email) {
+                    var error = []
+    
+                    if (!form.urutan) {
+                        error.push(respon.__('validation.required', 'urutan'))
+                    }
+    
+                    if (!form.nama) {
+                        error.push(respon.__('validation.required', 'nama'))
+                    }
+    
+                    if (!form.email) {
+                        error.push(respon.__('validation.required', 'email'))
+                    }
+    
+                    print.error(respon.__('data.failed'))
+                    print.debug('request from client to store user data failed due missing form data')
+    
+                    return responseData.error(permintaan, respon, {
+                        message: respon.__('data.failed'),
+                        error: error
+                    }, 400)
+                }
+    
+                var duplicate = users.find((user) => user.urutan == form.urutan)
+            
+                if (duplicate) {
+                    print.error(respon.__('data.failed'))
+                    print.debug('request from client to store user data failed due duplicated')
+    
+                    return responseData.error(permintaan, respon, {
+                        message: respon.__('data.failed'),
+                        error: respon.__('data.duplicate')
+                    }, 409)
+                } else {
+                    users.push(form)
+                
+                    userRepository.saveUserData(users)
+                
+                    print.info(respon.__('data.success', respon.__('operator.add')))
+                    print.debug('request from client to store user data success')
+    
+                    return responseData.success(permintaan, respon, {
+                        message: respon.__('data.success', respon.__('operator.add')),
+                        data: userRepository.getUserData()
+                    }, 201)
+                }   
+            } else if (database.default == 'mongoose') {
+                var user = await userRepository.saveUserData(form)
+    
+                print.info(respon.__('data.success', respon.__('operator.add')))
+                print.debug('request from client to store user data success')
+    
+                return responseData.success(permintaan, respon, {
+                    message: respon.__('data.success', respon.__('operator.add')),
+                    data: user
+                }, 201)
+            }
+        } catch (error) {
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: respon.__('data.duplicate')
-            }, 409)
-        } else {
-            users.push(form)
-        
-            userRepository.saveUserData(users)
-        
-            print.info(respon.__('data.success', respon.__('operator.add')))
-            print.debug('request from client to store task data success')
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.add')),
-                data: userRepository.getUserData()
-            }, 201)
+                error: error.message
+            }, 500)
         }
     },
     
@@ -108,24 +134,31 @@ module.exports = {
      * 
      * @return Array
      */
-    show: (permintaan, respon) => {
+    show: async (permintaan, respon) => {
         var urutan = permintaan.params.id
-        var isExist = userRepository.findUserData(urutan)
 
-        if (!isExist) {
-            print.error(respon.__('data.not_found'))
-            print.debug('request from client to store task data failed due data not found')
+        try {
+            var isExist = await userRepository.findUserData(urutan)
 
+            if (!isExist) {
+                print.error(respon.__('data.not_found'))
+                print.debug('request from client to store user data failed due data not found')
+    
+                return responseData.error(permintaan, respon, {
+                    message: respon.__('data.not_found')
+                }, 404)
+            } else {
+                print.info(JSON.stringify(isExist))
+                print.debug('request from client to store user data success')
+    
+                return responseData.success(permintaan, respon, {
+                    data: isExist
+                }, 206)
+            }
+        } catch (error) {
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            }, 404)
-        } else {
-            print.info(JSON.stringify(isExist))
-            print.debug('request from client to store task data success')
-
-            return responseData.success(permintaan, respon, {
-                data: isExist
-            }, 206)
+                message: error.message
+            }, 500)
         }
     },
     
@@ -138,54 +171,73 @@ module.exports = {
      * 
      * @return Array
      */
-    update: (permintaan, respon) => {
+    update: async (permintaan, respon) => {
         var forms = permintaan.body
         var urutan = permintaan.params.id
-        var users = userRepository.getUserData()
-        var isExist = userRepository.findUserData(urutan)
 
-        if (!isExist) {
-            print.error(respon.__('data.not_found'))
-            print.debug('request from client to store task data failed due data not found')
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            }, 404)
-        }
-
-        if (!forms.nama || !forms.email) {
-            var error = []
-
-            if (!form.nama) {
-                error.push(respon.__('validation.required', 'nama'))
-            }
-
-            if (!form.email) {
-                error.push(respon.__('validation.required', 'email'))
-            }
-
-            print.error(respon.__('data.failed'))
-            print.debug('request from client to store task data failed due mising form data')
-
-            return responseData.error(permintaan, respon, {
-                message: respon.__('data.failed'),
-                error: error
-            }, 400)
-        } else {
-            urutan = urutan - 1
-
-            users[urutan].nama = forms.nama
-            users[urutan].email = forms.email
+        try {
+            if (database.default == 'file') {
+                var users = userRepository.getUserData()
+                var isExist = userRepository.findUserData(urutan)
     
-            userRepository.saveUserData(users)
+                if (!isExist) {
+                    print.error(respon.__('data.not_found'))
+                    print.debug('request from client to store user data failed due data not found')
     
-            print.info(respon.__('data.success', respon.__('operator.change')))
-            print.debug('request from client to store task data success')
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.change')),
-                data: users
-            }, 202)
+                    return responseData.error(permintaan, respon, {
+                        message: respon.__('data.not_found')
+                    }, 404)
+                }
+    
+                if (!forms.nama || !forms.email) {
+                    var error = []
+    
+                    if (!form.nama) {
+                        error.push(respon.__('validation.required', 'nama'))
+                    }
+    
+                    if (!form.email) {
+                        error.push(respon.__('validation.required', 'email'))
+                    }
+    
+                    print.error(respon.__('data.failed'))
+                    print.debug('request from client to store user data failed due mising form data')
+    
+                    return responseData.error(permintaan, respon, {
+                        message: respon.__('data.failed'),
+                        error: error
+                    }, 400)
+                } else {
+                    urutan = urutan - 1
+    
+                    users[urutan].nama = forms.nama
+                    users[urutan].email = forms.email
+            
+                    userRepository.saveUserData(users)
+            
+                    print.info(respon.__('data.success', respon.__('operator.change')))
+                    print.debug('request from client to store user data success')
+    
+                    return responseData.success(permintaan, respon, {
+                        message: respon.__('data.success', respon.__('operator.change')),
+                        data: users
+                    }, 202)
+                } 
+            } else if (database.default == 'mongoose') {
+                var user = await userRepository.updateUserData(urutan, forms)
+    
+                print.info(respon.__('data.success', respon.__('operator.change')))
+                print.debug('request from client to store user data success')
+    
+                return responseData.success(permintaan, respon, {
+                    message: respon.__('data.success', respon.__('operator.change')),
+                    data: user
+                }, 202)
+            }
+        } catch (error) {
+            return responseData.error(permintaan, respon, {
+                error: error.message
+            }, 500)
         }
     },
     
@@ -198,28 +250,48 @@ module.exports = {
      * 
      * @return Array
      */
-    destroy: (permintaan, respon) => {
+    destroy: async (permintaan, respon) => {
         var urutan = permintaan.params.id
-        var users = userRepository.getUserData()
-        var usersToKepp = users.filter((user) => user.urutan != urutan)
-
-        if (users.length <= usersToKepp.length) {
-            print.error(respon.__('data.not_found'))
-            print.debug('request from client to store task data failed due data not found')
-
+        
+        try {
+            if (database.default == 'file') {
+                var users = userRepository.getUserData()
+                var usersToKepp = users.filter((user) => user.urutan != urutan)
+    
+                if (users.length <= usersToKepp.length) {
+                    print.error(respon.__('data.not_found'))
+                    print.debug('request from client to store user data failed due data not found')
+    
+                    return responseData.error(permintaan, respon, {
+                        message: respon.__('data.not_found')
+                    }, 403)
+                } else {
+                    userRepository.saveUserData(usersToKepp)
+    
+                    print.info(respon.__('data.success', respon.__('operator.delete')))
+                    print.debug('request from client to store user data success')
+    
+                    return responseData.success(permintaan, respon, {
+                        message: respon.__('data.success', respon.__('operator.delete')),
+                        data: usersToKepp
+                    }, 202)
+                }
+            } else if (database.default == 'mongoose') {
+                await userRepository.destroyUserData(urutan)
+                var users = await userRepository.getUserData()
+    
+                print.info(respon.__('data.success', respon.__('operator.delete')))
+                print.debug('request from client to store user data success')
+    
+                return responseData.success(permintaan, respon, {
+                    message: respon.__('data.success', respon.__('operator.delete')),
+                    data: users
+                }, 202)
+            }
+        } catch (error) {
             return responseData.error(permintaan, respon, {
-                message: respon.__('data.not_found')
-            }, 403)
-        } else {
-            userRepository.saveUserData(usersToKepp)
-
-            print.info(respon.__('data.success', respon.__('operator.delete')))
-            print.debug('request from client to store task data success')
-
-            return responseData.success(permintaan, respon, {
-                message: respon.__('data.success', respon.__('operator.delete')),
-                data: usersToKepp
-            }, 202)
+                error: error.message
+            }, 500)
         }
     },
 }
