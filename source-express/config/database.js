@@ -34,8 +34,11 @@ module.exports = {
         file = {
             driver: 'file'
         },
-        mysql = {
-            driver: 'mysql'
+        mongoose = {
+            driver: 'mongoose',
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.DB_PORT || '27017',
+            database: process.env.DB_DATABASE || 'note'
         }
     ]
 };
