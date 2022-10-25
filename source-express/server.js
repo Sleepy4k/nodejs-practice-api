@@ -2,6 +2,7 @@ var express = require('express')
 
 // Get Config File
 var { system } = require('./config/path')
+var database = require('./config/database')
 var { port, env, url, debug } = require('./config/app')
 
 // Traits
@@ -38,6 +39,15 @@ if (env == 'local') {
     
     // Main Route
     app.use(require(`./${system.tests}/${system.router}`))
+}
+
+// Mongoose Connect
+if (database.default == 'mongoose') {
+    // Mongoose init
+    var connectDB = require('./config/mongoose')
+
+    // Mongoose process
+    connectDB.connect()
 }
 
 // Listen Web
