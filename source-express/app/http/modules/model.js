@@ -33,10 +33,12 @@ module.exports = {
 
             return true
         } catch (error) {
-            fs.closeSync(fs.openSync(path, 'w'))
-            fs.writeFileSync(path, '[]')
+            if (database.get() == 'file') {
+                fs.closeSync(fs.openSync(path, 'w'))
+                fs.writeFileSync(path, '[]')
+            }
 
-            print.error(error)
+            print.error(error.message)
 
             return module.exports.exist(file)
         }
@@ -60,7 +62,7 @@ module.exports = {
                 return JSON.parse(dataString)
             }
         } catch (error) {
-            print.error(error)
+            print.error(error.message)
         }
     },
 
@@ -83,7 +85,7 @@ module.exports = {
                 return dataSaved
             }
         } catch (error) {
-            print.error(error)
+            print.error(error.message)
         }
     },
 
@@ -102,7 +104,7 @@ module.exports = {
 
             return user
         } catch (error) {
-            print.error(error)
+            print.error(error.message)
         }
     }
 }
